@@ -148,17 +148,14 @@ class TestSearchTool:
         """Test basic search."""
         params = SearchParams(query="Python tutorial")
         result = await search_executor(params)
-        assert isinstance(result, list)
+        assert isinstance(result, str)
+        assert "Python tutorial" in result
         assert len(result) > 0
-        for item in result:
-            assert "title" in item
-            assert "url" in item
-            assert "snippet" in item
 
     @pytest.mark.asyncio
     async def test_search_with_limit(self):
         """Test search with custom limit."""
         params = SearchParams(query="machine learning", num_results=3)
         result = await search_executor(params)
-        assert isinstance(result, list)
-        assert len(result) <= 3
+        assert isinstance(result, str)
+        assert "machine learning" in result

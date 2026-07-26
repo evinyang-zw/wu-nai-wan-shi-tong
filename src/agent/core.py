@@ -1,6 +1,7 @@
 """WanShiTongAgent — core conversation loop."""
 from __future__ import annotations
 
+import json
 from typing import Any
 
 from pydantic import ValidationError
@@ -51,6 +52,8 @@ class WanShiTongAgent:
                     result = f"参数校验错误：{e}"
                 except ToolExecutionError as e:
                     result = f"工具调用失败：{e}"
+                if not isinstance(result, str):
+                    result = json.dumps(result, ensure_ascii=False)
                 self.conversation_history.append(
                     self.llm.format_tool_result(tool_call.id, result)
                 )

@@ -36,19 +36,22 @@ SEARCH_TEMPLATES = [
 ]
 
 
-async def search_executor(params: SearchParams) -> Any:
+async def search_executor(params: SearchParams) -> str:
     """Execute web search queries.
-    
+
     Args:
         params: Search query parameters
-        
+
     Returns:
-        Search results list
+        Formatted search results string
     """
+    query = params.query
     num_results = min(params.num_results, len(SEARCH_TEMPLATES))
-    
-    # Select random templates (in a real implementation, we'd actually search)
+
     selected_indices = random.sample(range(len(SEARCH_TEMPLATES)), num_results)
-    results = [SEARCH_TEMPLATES[i] for i in selected_indices]
-    
-    return results
+    results = []
+    for i, idx in enumerate(selected_indices, 1):
+        t = SEARCH_TEMPLATES[idx]
+        results.append(f"{i}. {t['title']}\n   URL: {t['url']}\n   {t['snippet']}")
+
+    return f"搜索 '{query}' 的结果：\n\n" + "\n\n".join(results)
