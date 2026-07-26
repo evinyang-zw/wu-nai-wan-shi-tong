@@ -7,6 +7,7 @@ from typing import Any
 from pydantic import ValidationError
 
 from src.agent.config import AgentConfig
+from src.llm.anthropic_provider import AnthropicProvider
 from src.llm.base import LLMProvider, LLMProviderError
 from src.tools.registry import ToolExecutionError, ToolRegistry
 
@@ -23,6 +24,12 @@ class WanShiTongAgent:
         self.config = config or AgentConfig()
         self.conversation_history: list[dict[str, Any]] = []
 
+    def _get_tools_for_provider(self) -> list[dict[str, Any]]:
+        """Return tool definitions in the format expected by the active LLM provider."""
+        if isinstance(self.llm, AnthropicProvider):
+            return self.tools.get_anthropic_tools()
+        return self.tools.get_openai_tools()
+
     async def chat(self, user_input: str) -> str:
         self.conversation_history.append({"role": "user", "content": user_input})
 
@@ -30,7 +37,7 @@ class WanShiTongAgent:
             try:
                 response = await self.llm.chat_with_tools(
                     messages=self.conversation_history,
-                    tools=self.tools.get_openai_tools(),
+                    tools=self._get_tools_for_provider(),
                 )
             except LLMProviderError as e:
                 return f"抱歉，AI 服务暂时不可用：{e}"

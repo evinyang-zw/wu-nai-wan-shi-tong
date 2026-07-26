@@ -50,7 +50,19 @@ class AnthropicProvider(LLMProvider):
                     ToolCall(id=block.id, name=block.name, arguments=block.input)
                 )
 
-        raw_message = {"role": "assistant", "content": response.content}
+        # Serialize content blocks to plain dicts for JSON compatibility
+        serialized_content = []
+        for block in response.content:
+            if block.type == "text":
+                serialized_content.append({"type": "text", "text": block.text})
+            elif block.type == "tool_use":
+                serialized_content.append({
+                    "type": "tool_use",
+                    "id": block.id,
+                    "name": block.name,
+                    "input": block.input,
+                })
+        raw_message = {"role": "assistant", "content": serialized_content}
         return LLMResponse(
             content=text_content if text_content else None,
             tool_calls=tool_calls,

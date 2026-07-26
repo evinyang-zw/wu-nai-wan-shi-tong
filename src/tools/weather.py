@@ -2,8 +2,6 @@
 from __future__ import annotations
 
 import random
-from datetime import datetime, timedelta
-from typing import Any
 
 from src.schema.types import WeatherParams
 
@@ -11,35 +9,31 @@ from src.schema.types import WeatherParams
 WEATHER_CONDITIONS = ["晴", "多云", "阴", "小雨", "大雨", "雪", "雾"]
 
 
-async def weather_executor(params: WeatherParams) -> Any:
+async def weather_executor(params: WeatherParams) -> str:
     """Execute weather queries.
-    
+
     Args:
         params: Weather query parameters
-        
+
     Returns:
-        Weather data
+        Human-readable weather report string
     """
-    # Generate current weather
-    current_weather = {
-        "city": params.city,
-        "temperature": random.randint(5, 35),
-        "condition": random.choice(WEATHER_CONDITIONS),
-        "humidity": random.randint(30, 80),
-        "timestamp": datetime.now().isoformat(),
-    }
-    
-    # Add forecast if requested
+    temp = random.randint(5, 35)
+    condition = random.choice(WEATHER_CONDITIONS)
+    humidity = random.randint(30, 80)
+
+    lines = [
+        f"{params.city} 当前天气：",
+        f"  温度: {temp}°C",
+        f"  天气: {condition}",
+        f"  湿度: {humidity}%",
+    ]
+
     if params.include_forecast:
-        forecast = []
-        today = datetime.now().date()
+        lines.append(f"\n未来 {params.forecast_days} 天预报：")
         for i in range(params.forecast_days):
-            forecast_date = today + timedelta(days=i + 1)
-            forecast.append({
-                "date": forecast_date.isoformat(),
-                "temperature": random.randint(5, 35),
-                "condition": random.choice(WEATHER_CONDITIONS),
-            })
-        current_weather["forecast"] = forecast
-    
-    return current_weather
+            f_temp = random.randint(3, 33)
+            f_condition = random.choice(WEATHER_CONDITIONS)
+            lines.append(f"  第 {i + 1} 天: {f_condition}, {f_temp}°C")
+
+    return "\n".join(lines)

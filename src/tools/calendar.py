@@ -3,7 +3,6 @@ from __future__ import annotations
 
 import uuid
 from datetime import datetime
-from typing import Any
 
 from src.schema.types import CalendarEventParams
 
@@ -11,17 +10,21 @@ from src.schema.types import CalendarEventParams
 _events: list[dict] = []
 
 
-async def calendar_executor(params: CalendarEventParams) -> Any:
+def reset_events() -> None:
+    """Reset events storage (for testing)."""
+    _events.clear()
+
+
+async def calendar_executor(params: CalendarEventParams) -> str:
     """Execute calendar operations.
-    
+
     Args:
         params: Calendar event parameters
-        
+
     Returns:
-        Calendar operation result
+        Human-readable result string
     """
     if params.action == "create":
-        # Create a new event
         event_id = f"evt_{uuid.uuid4().hex[:8]}"
         event = {
             "event_id": event_id,
@@ -31,21 +34,21 @@ async def calendar_executor(params: CalendarEventParams) -> Any:
             "created_at": datetime.now().isoformat(),
         }
         _events.append(event)
-        return event
-    
+        return f"事件创建成功：ID={event_id}, 标题='{params.title}', 时间={params.start_time} ~ {params.end_time}"
+
     elif params.action == "query":
-        # Query events (simplified - return all events for now)
-        # In a real implementation, we'd filter by date_range
-        return _events
-    
+        if not _events:
+            return "当前没有日程安排。"
+        lines = ["当前日程："]
+        for e in _events:
+            lines.append(f"  - [{e['event_id']}] {e['title']} ({e['start_time']} ~ {e['end_time']})")
+        return "\n".join(lines)
+
     elif params.action == "delete":
-        # Delete an event
         for i, event in enumerate(_events):
             if event["event_id"] == params.event_id:
-                _events.pop(i)
-                return {"deleted": True, "event_id": params.event_id}
-        # If not found
-        return {"deleted": False, "error": "Event not found"}
-    
-    else:
-        return {"error": f"Unknown action: {params.action}"}
+                removed = _events.pop(i)
+                return f"事件已删除：{removed['title']} (ID={params.event_id})"
+        return f"未找到 ID 为 {params.event_id} 的事件"
+
+    return f"未知操作：{params.action}"
