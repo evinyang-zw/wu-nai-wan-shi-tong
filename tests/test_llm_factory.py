@@ -36,13 +36,10 @@ class TestCreateLLMProvider:
             assert provider._model == "claude-3-opus-20240229"
 
     def test_unknown_provider(self):
-        """Test that unknown provider raises LLMProviderError."""
-        with pytest.raises(LLMProviderError) as exc_info:
-            create_llm_provider("unknown", api_key="test-key")
-        assert "不支持的 LLM 提供商" in str(exc_info.value)
-        assert "unknown" in str(exc_info.value)
-        assert "openai" in str(exc_info.value)
-        assert "anthropic" in str(exc_info.value)
+        """Test that unknown provider falls back to OpenAI-compatible API."""
+        with patch("src.llm.openai_provider.AsyncOpenAI"):
+            provider = create_llm_provider("unknown", api_key="test-key", base_url="https://api.example.com/v1")
+            assert isinstance(provider, OpenAIProvider)
 
     def test_create_returns_llm_provider_instance(self):
         """Test that created providers are instances of LLMProvider."""

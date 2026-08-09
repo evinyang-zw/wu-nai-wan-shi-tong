@@ -4,7 +4,8 @@
 
 ## 特性
 
-- **多 LLM 支持**：OpenAI (GPT-4o) / Anthropic (Claude)，可扩展更多 Provider
+- **多 LLM 支持**：OpenAI (GPT-4o) / Anthropic (Claude) / 小米 (MiMo-v2.5)，可扩展更多 Provider
+- **自定义 Base URL**：支持 OpenAI 兼容的第三方 API 端点
 - **工具 Schema 设计**：基于 Pydantic 的类型安全参数定义，自动转换为 LLM 工具格式
 - **Function Calling 流程**：LLM 自主决策工具选择、参数生成、结果整合
 - **多轮工具调用**：支持单轮多工具并行、多轮串联、错误降级
@@ -78,6 +79,12 @@ OPENAI_MODEL=gpt-4o
 # LLM_PROVIDER=anthropic
 # ANTHROPIC_API_KEY=sk-ant-your-key-here
 # ANTHROPIC_MODEL=claude-sonnet-4-20250514
+
+# 或小米 MiMo（自定义 Base URL）
+# LLM_PROVIDER=xiaomi
+# LLM_API_KEY=sk-your-key-here
+# LLM_MODEL=mimo-v2.5
+# LLM_BASE_URL=https://open.bigmodel.cn/api/paas/v4
 ```
 
 ### 运行
@@ -149,7 +156,11 @@ registry.register(
 
 ### 切换 LLM Provider
 
-修改 `.env` 中的 `LLM_PROVIDER` 即可，无需修改代码。
+修改 `.env` 中的 `LLM_PROVIDER` 即可，无需修改代码。支持：
+
+- **OpenAI**：`LLM_PROVIDER=openai`（使用 `OPENAI_API_KEY`）
+- **Anthropic**：`LLM_PROVIDER=anthropic`（使用 `ANTHROPIC_API_KEY`）
+- **自定义 API**：`LLM_PROVIDER=<任意名称>`（使用 `LLM_API_KEY` + `LLM_BASE_URL`）
 
 ## License
 
