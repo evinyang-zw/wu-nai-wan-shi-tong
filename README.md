@@ -84,7 +84,7 @@ OPENAI_MODEL=gpt-4o
 # LLM_PROVIDER=xiaomi
 # LLM_API_KEY=sk-your-key-here
 # LLM_MODEL=mimo-v2.5
-# LLM_BASE_URL=https://open.bigmodel.cn/api/paas/v4
+# LLM_BASE_URL=https://api.xiaomimimo.com/v1
 ```
 
 ### 运行
