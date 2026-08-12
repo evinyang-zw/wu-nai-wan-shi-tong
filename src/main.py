@@ -29,7 +29,7 @@ async def main() -> None:
         print("错误：请设置 LLM API Key 环境变量")
         print("参考 .env.example 配置")
         sys.exit(1)
-    llm = create_llm_provider(config.provider, api_key=config.api_key, model=config.model)
+    llm = create_llm_provider(config.provider, api_key=config.api_key, model=config.model, base_url=config.base_url)
     tools = build_registry()
     agent = WanShiTongAgent(llm=llm, tools=tools, config=config)
     print(f"吾乃万事通 — 个人助手 (LLM: {config.provider}/{config.model})")

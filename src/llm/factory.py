@@ -11,4 +11,6 @@ def create_llm_provider(provider_name: str, **kwargs: Any) -> LLMProvider:
         from src.llm.anthropic_provider import AnthropicProvider
         return AnthropicProvider(**kwargs)
     else:
-        raise LLMProviderError(f"不支持的 LLM 提供商: {provider_name}，支持的提供商: openai, anthropic")
+        # 尝试使用 OpenAI 兼容的 API
+        from src.llm.openai_provider import OpenAIProvider
+        return OpenAIProvider(**kwargs)
